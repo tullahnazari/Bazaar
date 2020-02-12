@@ -7,6 +7,8 @@ import 'package:shopapp/providers/product.dart';
 import 'package:shopapp/screens/product_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
+  ProductItem(String id, String title, String imageUrl);
+
   // final String id;
   // final String title;
   // final String imageUrl;
