@@ -5,11 +5,8 @@ import 'package:shopapp/models/http_exception.dart';
 import 'package:shopapp/providers/product.dart';
 import 'package:http/http.dart' as http;
 
-
-
-//mixin: extending another class, merge properties or methods into class 
-class Products with ChangeNotifier{
-
+//mixin: extending another class, merge properties or methods into class
+class Products with ChangeNotifier {
   List<Product> _items = [
     //Product(
     //   id: 'p1',
@@ -54,9 +51,7 @@ class Products with ChangeNotifier{
 
   Products(this.authToken, this.userId, this._items);
 
-
-
-  //MAKING IT SO ONLY DATA INSIDE HERE IS CHANGED FOR PRODUCT DATA  
+  //MAKING IT SO ONLY DATA INSIDE HERE IS CHANGED FOR PRODUCT DATA
   List<Product> get items {
     return [..._items];
   }
@@ -67,12 +62,12 @@ class Products with ChangeNotifier{
   }
 
   Product findById(String id) {
-    return _items.firstWhere((
-      prod) => prod.id == id);
+    return _items.firstWhere((prod) => prod.id == id);
   }
 
   Future<void> fetchAndSetProducts() async {
-    var url = 'https://notetaker-afe0d.firebaseio.com/products.json?auth=$authToken';
+    var url =
+        'https://halaalbazaar-b3f94.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -80,9 +75,9 @@ class Products with ChangeNotifier{
         return;
       }
       //overriding url from above
-      url = 'https://notetaker-afe0d.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
-      final favoriteResponse = await 
-      http.get(url);
+      url =
+          'https://halaalbazaar-b3f94.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
+      final favoriteResponse = await http.get(url);
       final favoriteData = json.decode(favoriteResponse.body);
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
@@ -92,8 +87,8 @@ class Products with ChangeNotifier{
           description: prodData['description'],
           price: prodData['price'],
           //if user doesnt have any favorites
-          isFavorite: favoriteData == null ? 
-          false : favoriteData[prodId] ?? false,
+          isFavorite:
+              favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -104,73 +99,69 @@ class Products with ChangeNotifier{
     }
   }
 
-
-
   Future<void> addProduct(Product product) async {
     //sending http request
-    final url = 'https://notetaker-afe0d.firebaseio.com/products.json?auth=$authToken';
+    final url =
+        'https://halaalbazaar-b3f94.firebaseio.com/products.json?auth=$authToken';
     try {
-    final response = await http.post(url, body: json.encode({
-      'title': product.title,
-      'description': product.description,
-      'imageUrl': product.imageUrl,
-      'price': product.price,
-    }),
-    );
-    final newProduct = Product(
-      title: product.title, 
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      id: json.decode(response.body)['name'],
-    );
-    _items.add(newProduct);
-    notifyListeners();
+      final response = await http.post(
+        url,
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+        }),
+      );
+      final newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: json.decode(response.body)['name'],
+      );
+      _items.add(newProduct);
+      notifyListeners();
     } catch (error) {
       print(error);
       throw error;
     }
-      //print(json.decode(response.body));
-      
-      
-    }
-
+    //print(json.decode(response.body));
+  }
 
   void updateProduct(String id, Product newProduct) async {
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
-    if (prodIndex >= 0) { 
-    final url = 'https://notetaker-afe0d.firebaseio.com/products/$id.json?auth=$authToken';
-    await http.patch(url, body: json.encode({
-      'title': newProduct.title,
-      'description': newProduct.description,
-      'imageUrl': newProduct.imageUrl,
-      'price': newProduct.price,
-    }));
-    _items[prodIndex] = newProduct;
-    notifyListeners();
+    if (prodIndex >= 0) {
+      final url =
+          'https://halaalbazaar-b3f94.firebaseio.com/products/$id.json?auth=$authToken';
+      await http.patch(url,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'imageUrl': newProduct.imageUrl,
+            'price': newProduct.price,
+          }));
+      _items[prodIndex] = newProduct;
+      notifyListeners();
     } else {
       print('Product does not exist');
     }
   }
 
-
-  Future<void> deleteProduct(String id) async{
-    final url = 'https://notetaker-afe0d.firebaseio.com/products/$id.json?auth=$authToken';
+  Future<void> deleteProduct(String id) async {
+    final url =
+        'https://halaalbazaar-b3f94.firebaseio.com/products/$id.json?auth=$authToken';
     //optimistic deleting/updating
     final existingProductIndex = _items.indexWhere((prod) => prod.id == id);
     var existingProduct = _items[existingProductIndex];
     _items.removeAt(existingProductIndex);
     notifyListeners();
     final response = await http.delete(url);
-      if (response.statusCode >= 400) {
+    if (response.statusCode >= 400) {
       _items.insert(existingProductIndex, existingProduct);
       notifyListeners();
       throw HttpException('Could not delete product.');
     }
-      existingProduct = null;
-    }
-
-    
+    existingProduct = null;
   }
-
-
+}

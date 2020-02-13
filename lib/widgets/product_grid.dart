@@ -4,7 +4,6 @@ import 'package:shopapp/providers/products.dart';
 import 'package:shopapp/widgets/product_item.dart';
 
 class ProductsGrid extends StatelessWidget {
-
   //filtering grid by favs
   final bool showFavs;
   ProductsGrid(this.showFavs);
@@ -17,14 +16,14 @@ class ProductsGrid extends StatelessWidget {
       padding: const EdgeInsets.all(10.0),
       itemCount: products.length,
       itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
-            // builder: (c) => products[i],
-            value: products[i],
-            child: ProductItem(
-                // products[i].id,
-                // products[i].title,
-                // products[i].imageUrl,
-                ),
-          ),
+        // builder: (c) => products[i],
+        value: products[i],
+        child: ProductItem(
+          products[i].id,
+          products[i].title,
+          products[i].imageUrl,
+        ),
+      ),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 3 / 2,

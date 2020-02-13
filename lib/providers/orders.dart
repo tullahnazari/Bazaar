@@ -10,17 +10,14 @@ class OrderItem {
   final List<CartItem> products;
   final DateTime dateTime;
 
-
-  OrderItem({
-    @required this.id,
-    @required this.amount,
-    @required this.products,
-    @required this.dateTime
-  });
+  OrderItem(
+      {@required this.id,
+      @required this.amount,
+      @required this.products,
+      @required this.dateTime});
 }
 
 class Orders with ChangeNotifier {
-
   List<OrderItem> _orders = [];
   final String authToken;
   final String userId;
@@ -32,7 +29,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> fetchAndSetOrders() async {
-    final url = 'https://notetaker-afe0d.firebaseio.com/orders/$userId.json?auth=$authToken';
+    final url =
+        'https://halaalbazaar-b3f94.firebaseio.com/orders/$userId.json?auth=$authToken';
     final response = await http.get(url);
     final List<OrderItem> loadedOrders = [];
     final extractedData = json.decode(response.body) as Map<String, dynamic>;
@@ -48,11 +46,11 @@ class Orders with ChangeNotifier {
           products: (orderData['products'] as List<dynamic>)
               .map(
                 (item) => CartItem(
-                      id: item['id'],
-                      price: item['price'],
-                      quantity: item['quantity'],
-                      title: item['title'],
-                    ),
+                  id: item['id'],
+                  price: item['price'],
+                  quantity: item['quantity'],
+                  title: item['title'],
+                ),
               )
               .toList(),
         ),
@@ -63,7 +61,8 @@ class Orders with ChangeNotifier {
   }
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
-    final url = 'https://notetaker-afe0d.firebaseio.com/orders/$userId.json?auth=$authToken';
+    final url =
+        'https://halaalbazaar-b3f94.firebaseio.com/orders/$userId.json?auth=$authToken';
     final timestamp = DateTime.now();
     final response = await http.post(
       url,
@@ -91,8 +90,4 @@ class Orders with ChangeNotifier {
     );
     notifyListeners();
   }
-
-  
-
-
 }
